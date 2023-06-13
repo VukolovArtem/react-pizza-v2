@@ -40,21 +40,28 @@ const Home = () => {
   };
 
   //------ Функция запрос на сервер на получение списка пиц и рендкр их нас транице --------------
-  const fetchPizzas = () => {
+  const fetchPizzas = async () => {
     setIsLoading(true);
+
     const category = categoryId > 0 ? `category=${categoryId}` : "";
     const search = searchValue ? `&search=${searchValue}` : "";
     const sortBy = sortType.replace("-", "");
     const order = sortType.includes("-") ? "asc" : "desc";
-    axios
-      .get(
+
+    try {
+      const res = await axios.get(
         `https://6469e04603bb12ac20946e3a.mockapi.io/items?page=${currentPage}&limit=4&${category}&sortBy=${sortBy}&order=${order}${search}`
-      )
-      .then((res) => {
-        setItems(res.data);
-        setIsLoading(false);
-      });
+      );
+      setItems(res.data);
+    } catch (error) {
+      alert("Ошибка получения");
+      console.log("ERROR", error);
+    } finally {
+      setIsLoading(false);
+    }
+    window.scrollTo(0, 0);
   };
+
   //----- Если изменили параметры и был первый рендер то будет действие -----------------
   React.useEffect(() => {
     if (isMounted.current) {
@@ -100,6 +107,7 @@ const Home = () => {
   const pizzas = items.map((pizza) => (
     <PizzaBlock
       key={pizza.id}
+      id={pizza.id}
       imageUrl={pizza.imageUrl}
       title={pizza.title}
       price={pizza.price}
