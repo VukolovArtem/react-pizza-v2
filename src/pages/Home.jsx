@@ -1,7 +1,6 @@
 import React from "react";
 import qs from "qs";
-import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 
 import {
@@ -9,12 +8,16 @@ import {
   setCurrentPage,
   setFilters,
 } from "../redux/slices/filterSlice";
+
+import { fetchPizzas } from "../redux/slices/pizzasSlice";
+
 import Categories from "../component/Categories";
 import PizzaBlock from "../component/PizzaBlock";
 import Skeleton from "../component/PizzaBlock/Skeleton";
 import Sort, { sortList } from "../component/Sort";
 import Pagination from "../component/Pagination";
 import { SearchContext } from "../App";
+import ErrorInfo from "../component/ErrorInfo";
 
 const Home = () => {
   const navigate = useNavigate();
@@ -25,11 +28,10 @@ const Home = () => {
   const { categoryId, sort, currentPage } = useSelector(
     (state) => state.filterSlice
   );
-  const sortType = sort.sortProperty;
 
+  const { status, items } = useSelector((state) => state.pizzasSlice);
+  const sortType = sort.sortProperty;
   const { searchValue } = React.useContext(SearchContext);
-  const [items, setItems] = React.useState([]);
-  const [isLoading, setIsLoading] = React.useState(true);
 
   const onClickCategory = (id) => {
     dispatch(setCategoryId(id));
@@ -40,25 +42,21 @@ const Home = () => {
   };
 
   //------ Функция запрос на сервер на получение списка пиц и рендкр их нас транице --------------
-  const fetchPizzas = async () => {
-    setIsLoading(true);
-
+  const getPizzas = async () => {
     const category = categoryId > 0 ? `category=${categoryId}` : "";
     const search = searchValue ? `&search=${searchValue}` : "";
     const sortBy = sortType.replace("-", "");
     const order = sortType.includes("-") ? "asc" : "desc";
-
-    try {
-      const res = await axios.get(
-        `https://6469e04603bb12ac20946e3a.mockapi.io/items?page=${currentPage}&limit=4&${category}&sortBy=${sortBy}&order=${order}${search}`
-      );
-      setItems(res.data);
-    } catch (error) {
-      alert("Ошибка получения");
-      console.log("ERROR", error);
-    } finally {
-      setIsLoading(false);
-    }
+    //Запрос с сервера. Бизнес логика в редаксе
+    dispatch(
+      fetchPizzas({
+        category,
+        search,
+        sortBy,
+        order,
+        currentPage,
+      })
+    );
     window.scrollTo(0, 0);
   };
 
@@ -99,23 +97,24 @@ const Home = () => {
     window.scrollTo(0, 0);
 
     if (!isSearch.current) {
-      fetchPizzas();
+      getPizzas();
     }
     isSearch.current = false;
   }, [categoryId, sort.sortProperty, searchValue, currentPage]);
 
   const pizzas = items.map((pizza) => (
-    <PizzaBlock
-      key={pizza.id}
-      id={pizza.id}
-      imageUrl={pizza.imageUrl}
-      title={pizza.title}
-      price={pizza.price}
-      types={pizza.types}
-      sizes={pizza.sizes}
-      category={pizza.category}
-      rating={pizza.rating}
-    />
+    <Link key={pizza.id} to={`/pizza/${pizza.id}`}>
+      <PizzaBlock
+        id={pizza.id}
+        imageUrl={pizza.imageUrl}
+        title={pizza.title}
+        price={pizza.price}
+        types={pizza.types}
+        sizes={pizza.sizes}
+        category={pizza.category}
+        rating={pizza.rating}
+      />
+    </Link>
   ));
 
   const skeletons = [...new Array(8)].map((_, index) => (
@@ -124,15 +123,23 @@ const Home = () => {
 
   return (
     <div className="container">
-      <div className="content__top">
-        <Categories value={categoryId} onClickCategory={onClickCategory} />
-        <Sort />
-      </div>
-      <h2 className="content__title">
-        {searchValue ? searchValue : "Все пиццы"}
-      </h2>
-      <div className="content__items">{isLoading ? skeletons : pizzas}</div>
-      <Pagination currentPage={currentPage} onChangePage={onChangePage} />
+      {status === "error" ? (
+        <ErrorInfo />
+      ) : (
+        <>
+          <div className="content__top">
+            <Categories value={categoryId} onClickCategory={onClickCategory} />
+            <Sort />
+          </div>
+          <h2 className="content__title">
+            {searchValue ? searchValue : "Все пиццы"}
+          </h2>
+          <div className="content__items">
+            {status === "loading" ? skeletons : pizzas}
+          </div>
+          <Pagination currentPage={currentPage} onChangePage={onChangePage} />
+        </>
+      )}
     </div>
   );
 };
