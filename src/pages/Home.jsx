@@ -1,6 +1,6 @@
 import React from "react";
 import qs from "qs";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 
 import {
@@ -33,9 +33,9 @@ const Home = () => {
   const sortType = sort.sortProperty;
   const { searchValue } = React.useContext(SearchContext);
 
-  const onClickCategory = (id) => {
+  const onClickCategory = React.useCallback((id) => {
     dispatch(setCategoryId(id));
-  };
+  }, []);
 
   const onChangePage = (number) => {
     dispatch(setCurrentPage(number));
@@ -104,6 +104,7 @@ const Home = () => {
 
   const pizzas = items.map((pizza) => (
     <PizzaBlock
+      key={pizza.id}
       id={pizza.id}
       imageUrl={pizza.imageUrl}
       title={pizza.title}
@@ -127,7 +128,7 @@ const Home = () => {
         <>
           <div className="content__top">
             <Categories value={categoryId} onClickCategory={onClickCategory} />
-            <Sort />
+            <Sort value={sort} />
           </div>
           <h2 className="content__title">
             {searchValue ? searchValue : "Все пиццы"}
