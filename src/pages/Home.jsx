@@ -103,18 +103,16 @@ const Home = () => {
   }, [categoryId, sort.sortProperty, searchValue, currentPage]);
 
   const pizzas = items.map((pizza) => (
-    <Link key={pizza.id} to={`/pizza/${pizza.id}`}>
-      <PizzaBlock
-        id={pizza.id}
-        imageUrl={pizza.imageUrl}
-        title={pizza.title}
-        price={pizza.price}
-        types={pizza.types}
-        sizes={pizza.sizes}
-        category={pizza.category}
-        rating={pizza.rating}
-      />
-    </Link>
+    <PizzaBlock
+      id={pizza.id}
+      imageUrl={pizza.imageUrl}
+      title={pizza.title}
+      price={pizza.price}
+      types={pizza.types}
+      sizes={pizza.sizes}
+      category={pizza.category}
+      rating={pizza.rating}
+    />
   ));
 
   const skeletons = [...new Array(8)].map((_, index) => (
