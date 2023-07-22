@@ -21,9 +21,9 @@ const Cart = () => {
 
   return (
     <div className="container container--cart">
-      <div class="cart">
-        <div class="cart__top">
-          <h2 class="content__title">
+      <div className="cart">
+        <div className="cart__top">
+          <h2 className="content__title">
             <svg
               width="18"
               height="18"
@@ -55,7 +55,7 @@ const Cart = () => {
             </svg>
             Корзина
           </h2>
-          <div onClick={onClickClear} class="cart__clear">
+          <div onClick={onClickClear} className="cart__clear">
             <svg
               width="20"
               height="20"
@@ -96,13 +96,13 @@ const Cart = () => {
             <span>Очистить корзину</span>
           </div>
         </div>
-        <div class="content__items">
+        <div className="content__items">
           {items.map((item) => (
             <CartItem key={item.id} {...item} />
           ))}
         </div>
-        <div class="cart__bottom">
-          <div class="cart__bottom-details">
+        <div className="cart__bottom">
+          <div className="cart__bottom-details">
             <span>
               Всего пицц: <b>{totalCount} шт.</b>
             </span>
@@ -110,8 +110,11 @@ const Cart = () => {
               Сумма заказа: <b>{totalPrice} грн.</b>
             </span>
           </div>
-          <div class="cart__bottom-buttons">
-            <Link to="/" class="button button--outline button--add go-back-btn">
+          <div className="cart__bottom-buttons">
+            <Link
+              to="/"
+              className="button button--outline button--add go-back-btn"
+            >
               <svg
                 width="8"
                 height="14"
@@ -130,7 +133,7 @@ const Cart = () => {
 
               <span>Вернуться назад</span>
             </Link>
-            <div class="button pay-btn">
+            <div className="button pay-btn">
               <span>Оплатить сейчас</span>
             </div>
           </div>
