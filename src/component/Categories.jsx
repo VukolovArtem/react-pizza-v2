@@ -1,6 +1,6 @@
 import React from "react";
 
-const Categories = ({ value, onClickCategory }) => {
+const Categories = React.memo(({ value, onClickCategory }) => {
   const categories = [
     "Все",
     "Мясные",
@@ -25,6 +25,6 @@ const Categories = ({ value, onClickCategory }) => {
       </ul>
     </div>
   );
-};
+});
 
 export default Categories;

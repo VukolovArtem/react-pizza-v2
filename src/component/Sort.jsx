@@ -11,9 +11,8 @@ export const sortList = [
   { name: "алфавиту ↓", sortProperty: "-title" },
 ];
 
-const Sort = () => {
+const Sort = React.memo(({ value }) => {
   const dispatch = useDispatch();
-  const sort = useSelector((state) => state.filterSlice.sort);
   const sortRef = React.useRef();
   const [openSort, setOpenSort] = React.useState(false);
 
@@ -50,7 +49,7 @@ const Sort = () => {
           />
         </svg>
         <b>Сортировка по:</b>
-        <span onClick={() => setOpenSort(!openSort)}>{sort.name}</span>
+        <span onClick={() => setOpenSort(!openSort)}>{value.name}</span>
       </div>
       {openSort && (
         <div className="sort__popup">
@@ -60,7 +59,7 @@ const Sort = () => {
                 key={index}
                 onClick={() => selectSort(obj)}
                 className={
-                  sort.sortProperty === obj.sortProperty ? "active" : ""
+                  value.sortProperty === obj.sortProperty ? "active" : ""
                 }
               >
                 {obj.name}
@@ -71,6 +70,6 @@ const Sort = () => {
       )}
     </div>
   );
-};
+});
 
 export default Sort;
